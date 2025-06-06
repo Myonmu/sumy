@@ -76,7 +76,12 @@ function compile(compileInstruction, requester) {
         inklecateOptions.push("-s");
     }
 
+    inklecateOptions.push("-d")
+    inklecateOptions.push("INKY")
+
     inklecateOptions.push(mainInkPath);
+
+
 
     var inklecatePathToUse = inklecatePath;
     if( compileInstruction.inkJsCompatible ) {
