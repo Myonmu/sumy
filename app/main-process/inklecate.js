@@ -76,8 +76,12 @@ function compile(compileInstruction, requester) {
         inklecateOptions.push("-s");
     }
 
-    inklecateOptions.push("-d")
-    inklecateOptions.push("INKY")
+    if( compileInstruction.symbols){
+        compileInstruction.symbols.forEach(symbol => {
+            inklecateOptions.push("-d")
+            inklecateOptions.push(symbol)
+        })
+    }
 
     inklecateOptions.push(mainInkPath);
 

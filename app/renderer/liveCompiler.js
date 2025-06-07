@@ -29,6 +29,10 @@ var events = {};
 
 var compilerBusy = false;
 
+const defaultSymbols = ["INKY"];
+var inkySymbols = defaultSymbols;
+var exportSymbols = [];
+
 function setProject(p) {
     project = p;
 
@@ -40,12 +44,18 @@ function setProject(p) {
     reloadPending = true;
 }
 
+function setSymbols(settingsInkySymbols, settingsExportSymbols) {
+    inkySymbols = settingsInkySymbols ?? inkySymbols;
+    exportSymbols = settingsExportSymbols ?? inkySymbols;
+    reloadPending = true;
+}
+
 function resetErrors() {
     issues = [];
     selectedIssueIdx = -1;
 }
 
-function buildCompileInstruction() {
+function buildCompileInstruction(symbols = defaultSymbols) {
 
     sessionIdx += 1;
 
@@ -54,7 +64,8 @@ function buildCompileInstruction() {
         mainName: project.mainInk.filename(),
         updatedFiles: {},
         sessionId: `${namespace}_${sessionIdx}`,
-        namespace: namespace
+        namespace: namespace,
+        symbols: symbols
     };
 
     project.files.forEach((inkFile) => {
@@ -97,7 +108,7 @@ function reloadInklecateSession() {
     replaying = true;
     currentTurnIdx = 0;
 
-    var instr = buildCompileInstruction();
+    var instr = buildCompileInstruction(inkySymbols);
     instr.play = true;
 
     events.resetting(instr.sessionId);
@@ -115,7 +126,7 @@ function reloadInklecateSession() {
 function exportJson(inkJsCompatible, callback) {
     exportCompleteCallback = callback;
 
-    var instr = buildCompileInstruction();
+    var instr = buildCompileInstruction(exportSymbols);
     instr.export = true;
     instr.inkJsCompatible = inkJsCompatible;
     currentExportSessionId = instr.sessionId;
@@ -128,7 +139,7 @@ function exportJson(inkJsCompatible, callback) {
 function getStats(callback) {
     statsCompleteCallback = callback;
 
-    var instr = buildCompileInstruction();
+    var instr = buildCompileInstruction(inkySymbols);
     instr.stats = true;
     instr.inkJsCompatible = false;
     currentStatsSessionId = instr.sessionId;
@@ -404,6 +415,7 @@ ipc.on("return-stats", (event, statsObj, fromSessionId) => {
 
 exports.LiveCompiler = {
     setProject: setProject,
+    setSymbols: setSymbols,
     reload: reloadInklecateSession,
     exportJson: exportJson,
     setEdited: () => { lastEditorChange = Date.now(); },

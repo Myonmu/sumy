@@ -700,6 +700,7 @@ InkProject.prototype.refreshProjectSettings = function(newProjectSettings) {
             inkFile.setInkMode(this.inkMode);
         }
     }
+    LiveCompiler.setSymbols(newProjectSettings.inkySymbols, newProjectSettings.exportSymbols);
 }
 
 
